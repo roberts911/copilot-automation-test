@@ -20,14 +20,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }}
         run: |
-          python -c "
+          python << 'EOF'
           import os, requests, json
           
+          # 1. Try to load custom agent instructions from the file
+          agent_path = '.github/agents/my-agent.md'
           try:
-              with open('.github/agents/my-agent.md', 'r') as f:
+              with open(agent_path, 'r') as f:
                   system_prompt = f.read()
+              print(f"Successfully loaded agent instructions from {agent_path}")
           except FileNotFoundError:
               system_prompt = 'You are a helpful assistant.'
+              print(f"Warning: {agent_path} not found. Falling back to default assistant.")
               
           token = os.environ.get('GITHUB_TOKEN')
           url = 'https://models.inference.ai.azure.com/chat/completions'
@@ -48,13 +52,20 @@ jobs:
           response = requests.post(url, headers=headers, json=payload)
           
           if response.status_code == 200:
-              # Extract the actual text content from the JSON payload
-              answer = response.json()['choices'][0]['message']['content']
-              usage = response.json()['usage']
-              print(f"Tokens used - Prompt: {usage['prompt_tokens']}, Completion: {usage['completion_tokens']}")
+              res_data = response.json()
+              answer = res_data['choices'][0]['message']['content']
+              usage = res_data.get('usage', {})
+              
+              # 2. Print the exact token usage
+              print("\n=== Token Usage ===")
+              print(f"Prompt Tokens: {usage.get('prompt_tokens', 0)}")
+              print(f"Completion Tokens: {usage.get('completion_tokens', 0)}")
+              print(f"Total Tokens: {usage.get('total_tokens', 0)}")
+              
+              # 3. Print the formatted response
               print('\n=== Copilot Response ===\n')
               print(answer)
           else:
               print(f'API Error: {response.status_code}')
               print(response.text)
-          "
+          EOF
