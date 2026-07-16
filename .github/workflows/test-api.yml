@@ -1,0 +1,51 @@
+name: Test GitHub Models API
+on: workflow_dispatch
+
+jobs:
+  run-api-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Agent via API
+        env:
+          GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }}
+        run: |
+          python -c "
+          import os, requests, json
+          
+          try:
+              with open('.github/agents/my-agent.md', 'r') as f:
+                  system_prompt = f.read()
+          except FileNotFoundError:
+              system_prompt = 'You are a helpful assistant.'
+              
+          token = os.environ.get('GITHUB_TOKEN')
+          url = 'https://models.inference.ai.azure.com/chat/completions'
+          
+          headers = {
+              'Authorization': f'Bearer {token}',
+              'Content-Type': 'application/json'
+          }
+          
+          payload = {
+              'model': 'gpt-4o',
+              'messages': [
+                  {'role': 'system', 'content': system_prompt},
+                  {'role': 'user', 'content': 'Analyze the structure of a typical Node.js project. Use maximum 3 sentences.'}
+              ]
+          }
+          
+          response = requests.post(url, headers=headers, json=payload)
+          print('Status Code:', response.status_code)
+          print('Response:', json.dumps(response.json(), indent=2))
+          "
