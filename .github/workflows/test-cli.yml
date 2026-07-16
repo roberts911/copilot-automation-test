@@ -12,10 +12,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.COPILOT_PAT }}
         run: |
-          echo "=== Wypisuję nową pomoc CLI ==="
-          gh copilot --help
-          
-          echo -e "\n=== Testuję zapytanie do Copilota ==="
-          # Próbujemy użyć bezpośredniego promptu (-p) zgodnie z sugestią Twojego kolegi
-          gh copilot ask "List all markdown files in the repository. Answer in one sentence." || \
+          echo "=== Pytam Copilota ==="
           gh copilot -p "List all markdown files in the repository. Answer in one sentence."
