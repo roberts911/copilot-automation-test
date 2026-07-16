@@ -1,4 +1,4 @@
-name: Test Copilot CLI
+name: Test Copilot CLI with Agent
 on: workflow_dispatch
 
 jobs:
@@ -8,9 +8,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
           
-      - name: Run Copilot CLI
+      - name: Run Copilot CLI with Custom Agent
         env:
           GH_TOKEN: ${{ secrets.COPILOT_PAT }}
         run: |
-          echo "=== Pytam Copilota ==="
-          gh copilot -p "List all markdown files in the repository. Answer in one sentence."
+          echo "=== Wczytywanie Agenta i odpytywanie Copilota ==="
+          
+          # 1. Zapisujemy instrukcje z pliku agenta do zmiennej
+          AGENT_INSTRUCTIONS=$(cat .github/agents/my-agent.md)
+          
+          # 2. Przekazujemy polecenie z flagą -p (prompt), wstrzykując zmienną z agentem
+          gh copilot -p "Adopt the following persona/rules:
+          $AGENT_INSTRUCTIONS
+          
+          Now, execute this task: List all markdown files in the repository. Answer in one sentence."
