@@ -50,6 +50,8 @@ jobs:
           if response.status_code == 200:
               # Extract the actual text content from the JSON payload
               answer = response.json()['choices'][0]['message']['content']
+              usage = response.json()['usage']
+              print(f"Tokens used - Prompt: {usage['prompt_tokens']}, Completion: {usage['completion_tokens']}")
               print('\n=== Copilot Response ===\n')
               print(answer)
           else:
