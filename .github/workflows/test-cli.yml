@@ -18,7 +18,7 @@ jobs:
           AGENT_INSTRUCTIONS=$(cat .github/agents/my-agent.md)
           
           # 2. Pass the prompt using the -p flag, injecting the agent's instructions dynamically
-          gh copilot -p "Adopt the following persona/rules:
+          copilot -p "Adopt the following persona/rules:
           $AGENT_INSTRUCTIONS
           
           Now, execute this task: Design a secure, high-performance CI/CD pipeline for a modern web application. Include a diagram representing this workflow."
