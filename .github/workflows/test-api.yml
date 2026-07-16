@@ -41,11 +41,18 @@ jobs:
               'model': 'gpt-4o',
               'messages': [
                   {'role': 'system', 'content': system_prompt},
-                  {'role': 'user', 'content': 'Analyze the structure of a typical Node.js project. Use maximum 3 sentences.'}
+                  {'role': 'user', 'content': 'Design a secure, high-performance CI/CD pipeline for a modern web application. Include a diagram representing this workflow.'}
               ]
           }
           
           response = requests.post(url, headers=headers, json=payload)
-          print('Status Code:', response.status_code)
-          print('Response:', json.dumps(response.json(), indent=2))
+          
+          if response.status_code == 200:
+              # Extract the actual text content from the JSON payload
+              answer = response.json()['choices'][0]['message']['content']
+              print('\n=== Copilot Response ===\n')
+              print(answer)
+          else:
+              print(f'API Error: {response.status_code}')
+              print(response.text)
           "
