@@ -12,10 +12,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.COPILOT_PAT }}
         run: |
-          echo "=== Wczytywanie Agenta i odpytywanie Copilota ==="
+          echo "=== Loading Agent and querying Copilot ==="
           
+          # 1. Read the agent's instructions from the file into a variable
           AGENT_INSTRUCTIONS=$(cat .github/agents/my-agent.md)
           
+          # 2. Pass the prompt using the -p flag, injecting the agent's instructions dynamically
           gh copilot -p "Adopt the following persona/rules:
           $AGENT_INSTRUCTIONS
           
