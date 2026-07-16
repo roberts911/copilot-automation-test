@@ -1,0 +1,21 @@
+name: Test Copilot CLI
+on: workflow_dispatch
+
+jobs:
+  run-cli-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install GitHub CLI and Copilot extension
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_PAT }}
+        run: |
+          gh extension install github/gh-copilot
+          
+      - name: Run Copilot CLI
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_PAT }}
+        run: |
+          gh copilot suggest -t shell "List all markdown files in the repository."
